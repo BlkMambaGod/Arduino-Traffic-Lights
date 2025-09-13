@@ -1,3 +1,6 @@
+
+  <img src="https://github.com/user-attachments/assets/06b47fa1-b456-4393-bc54-226094e295c3" width="1024" height="256"/>
+
 # 🚦 Arduino Traffic Light Simulation
 
 This project is a **beginner-friendly Arduino simulation** of a traffic light at an intersection.  
