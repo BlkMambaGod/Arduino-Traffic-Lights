@@ -1,0 +1,40 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.1.2 Chrome/138.0.7204.243 Electron/37.4.0 Safari/537.36" version="28.1.2">
+  <diagram name="Page-1" id="EG5gabHoP7FlWOFb9aYB">
+    <mxGraphModel dx="1665" dy="889" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="uPkC5kLJivQ958copBq6-1" value="CarLights1: Red&lt;div&gt;CarLights2: Green&lt;/div&gt;&lt;div&gt;Pedestrian1: White&lt;/div&gt;&lt;div&gt;Pedestrian2: Red&lt;/div&gt;&lt;div&gt;7-segment: void&lt;/div&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.start_1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="40" y="70" width="170" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="uPkC5kLJivQ958copBq6-2" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="uPkC5kLJivQ958copBq6-1" target="uPkC5kLJivQ958copBq6-4">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="480" as="sourcePoint" />
+            <mxPoint x="400" y="130" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uPkC5kLJivQ958copBq6-4" value="CarLights1: Red&lt;div&gt;CarLights2: Green&lt;/div&gt;&lt;div&gt;Pedestrian1: White&lt;/div&gt;&lt;div&gt;Pedestrian2: Red&lt;/div&gt;&lt;div&gt;7-segment: void&lt;/div&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.start_1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="330" y="70" width="170" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="uPkC5kLJivQ958copBq6-5" value="8 sec" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="240" y="90" width="50" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="uPkC5kLJivQ958copBq6-7" value="CarLights1: Red&lt;div&gt;CarLights2: Green&lt;/div&gt;&lt;div&gt;Pedestrian1: White&lt;/div&gt;&lt;div&gt;Pedestrian2: Red&lt;/div&gt;&lt;div&gt;7-segment: void&lt;/div&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.start_1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="560" y="340" width="170" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="uPkC5kLJivQ958copBq6-8" value="CarLights1: Red&lt;div&gt;CarLights2: Green&lt;/div&gt;&lt;div&gt;Pedestrian1: White&lt;/div&gt;&lt;div&gt;Pedestrian2: Red&lt;/div&gt;&lt;div&gt;7-segment: void&lt;/div&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.start_1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="360" y="450" width="170" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="uPkC5kLJivQ958copBq6-9" value="CarLights1: Red&lt;div&gt;CarLights2: Green&lt;/div&gt;&lt;div&gt;Pedestrian1: White&lt;/div&gt;&lt;div&gt;Pedestrian2: Red&lt;/div&gt;&lt;div&gt;7-segment: void&lt;/div&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.start_1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="600" y="570" width="170" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="uPkC5kLJivQ958copBq6-10" value="CarLights1: Red&lt;div&gt;CarLights2: Green&lt;/div&gt;&lt;div&gt;Pedestrian1: White&lt;/div&gt;&lt;div&gt;Pedestrian2: Red&lt;/div&gt;&lt;div&gt;7-segment: void&lt;/div&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.start_1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="190" y="300" width="170" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="uPkC5kLJivQ958copBq6-11" value="CarLights1: Red&lt;div&gt;CarLights2: Green&lt;/div&gt;&lt;div&gt;Pedestrian1: White&lt;/div&gt;&lt;div&gt;Pedestrian2: Red&lt;/div&gt;&lt;div&gt;7-segment: void&lt;/div&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.start_1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="140" y="550" width="170" height="100" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
