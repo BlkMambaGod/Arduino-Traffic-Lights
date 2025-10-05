@@ -246,8 +246,8 @@ Beeper beep_one(9);
 Beeper beep_two(8);
 
 Countdown Ped_lights::timer(9, 12, 13);
-// Car_lights c_verti(49, 50, 51);
-// Ped_lights p_verti(52, 53);
+Car_lights c_verti(49, 50, 51);
+Ped_lights p_verti(52, 53, beep_one);
 // bool red_state = false;
 
 
