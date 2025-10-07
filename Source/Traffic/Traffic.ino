@@ -162,9 +162,9 @@ class Ped_lights {
     digitalWrite(red, false);
   }
 
-  void hurry() {
+  // void hurry() {
     
-  }
+  // }
 
   void stop() const {
     digitalWrite(white, false);
@@ -185,9 +185,9 @@ class Traffic_lights { // Contains all element for a direction light system
   Traffic_lights(Car_lights car, Ped_lights ped) : car(car), ped(ped), beep(beep) {}
     
   //getters
-  Car_lights getcar() const { return car; }
+  Car_lights getCar() const { return car; }
 
-  Ped_lights getped() const { return ped; }
+  Ped_lights getPed() const { return ped; }
 
   Beeper getBeep() const { return beep; }
 
@@ -271,28 +271,25 @@ void loop() {
   unsigned long now = millis();
 
   if (now - start < 5000) { // 1-> Vert, 2-> Rouge
-    // c_verti.go();
-    // p_verti.go();
-    //beta = stop
+    alpha.go();
+    beta.stop();
   }
   else
     if (now - start < 8000) { // 1-> Jaune, 2-> Rouge
-      // c_verti.hurry();
-      // p_verti.hurry();
-      //beta = stop
+      alpha.getCar().hurry();
+      // alpha.getPed().hurry();
+      // beta = stop
     }
     else
       if (now - start < 13000) { // 1-> Rouge, 2-> Vert
-        // c_verti.stop();
-        // p_verti.stop();
-        //beta = go
+        alpha.stop();
+        beta.go();
       }
       else
         if ( now - start < 16000) { // 1-> Rouge, 2-> Yellow
-          // c_verti.freak_on();
-          //beta = hurry
-        }
-        else { // Reset and Restart
+          beta.getCar().hurry();
+          // beta.getPed().hurry();
+        } else { // Reset and Restart
           start = now;
         }
 }
