@@ -35,6 +35,7 @@ class Beeper { // The beeping module class
 class Countdown { // The 7 segment module fot the countdown
   private: 
   int dataPin, latchPin, clockPin;
+  unsigned long blink;
   static const int DIGITS[10] = {0B11111100, 0B01100000, 0B11011010, 0B11110010, 0B01100110, 0B10110110, 0B10111110, 0B11100000, 0B11111110, 0B11110110};
   
   public:
@@ -47,26 +48,33 @@ class Countdown { // The 7 segment module fot the countdown
   int getLatchPin() const { return latchPin; }
 
   int getClockPin() const { return clockPin; }
+
+  unsigned long getBlink() const { return blink; }
+
+  const int* getDIGITS() const { return DIGITS; }
   
   //setters
   void setDataPin(int dataPin) { this->dataPin = dataPin; }
 
   void setLatchPin(int latchPin) { this->latchPin = latchPin; }
 
-  void setClockPin(int clockPin) { this->clockPin = clockPin;}
+  void setClockPin(int clockPin) { this->clockPin = clockPin; }
+
+  void setBlink(unsigned long blink) { this->blink = blink; }
 
   //methods
-
-  void count() {}
-
-
   void setup() {
     pinMode(dataPin, OUTPUT);
     pinMode(latchPin, OUTPUT);
     pinMode(clockPin, OUTPUT);
+    blink = millis();
   }
-      
 
+  void display(int digit) {
+    digitalWrite(latchPin, false);
+    shiftOut(dataPin, clockPin, MSBFIRST, digit);
+    digitalWrite(latchPin, true);
+  }
 };
 
 class Car_lights {
@@ -121,41 +129,26 @@ class Car_lights {
 class Ped_lights {
   private:
   int white, red;
-  static Countdown timer;
-  Beeper beep;
-  unsigned long blink;
-  bool red_state;
+  bool red_state = false;
 
   
   public:
-  Ped_lights(int white, int red, Beeper beep) : white(white), red(red), beep(beep) {
-    red_state = false;
-  }
+  Ped_lights(int white, int red, Beeper beep) : white(white), red(red) {}
   
   void setup() {
     pinMode(white, OUTPUT);
     pinMode(red, OUTPUT);
-    timer.setup();
-    blink = millis();
   }
   //getters
   int getWhite() const { return white; }
 
   int getRed() const { return red; }
 
-  Beeper getBeep() const { return beep; }
-
-  Countdown getTimer() const { return timer; }
-
-  unsigned long getBlink() const { return blink; }
-
   bool getRed_state() const { return red_state; }
 
 
   
   //setters
-  void setBlink(unsigned long time) { blink = time; }
-
   void setWhite(int white) { this->white = white; }
 
   void setRed(int red) { this->red = red; }
@@ -170,23 +163,7 @@ class Ped_lights {
   }
 
   void hurry() {
-    digitalWrite(white, false);
-
-    // blinking the light
-      unsigned long now = millis();
-      if (now - blink >= 1000) {
-        blink = now;
-        if (red_state == true)
-          red_state = false;
-        else
-          red_state = true;
-        digitalWrite(red, red_state);
-        beep.beep(NOTE_C6, 100);
-        
-        // timer.count();
-      }
-
-
+    
   }
 
   void stop() const {
@@ -196,19 +173,25 @@ class Ped_lights {
 };
 
 
-class Traffic_lights {
+class Traffic_lights { // Contains all element for a direction light system
   private:
   Car_lights car;
   Ped_lights ped;
+  static Countdown timer;
+  Beeper beep;
 
  
   public:
-  Traffic_lights(Car_lights car, Ped_lights ped) : car(car), ped(ped) {}
+  Traffic_lights(Car_lights car, Ped_lights ped) : car(car), ped(ped), beep(beep) {}
     
   //getters
   Car_lights getcar() const { return car; }
 
   Ped_lights getped() const { return ped; }
+
+  Beeper getBeep() const { return beep; }
+
+  Countdown getTimer() const { return timer; }
 
   //setters
   void setcar(Car_lights car) { this->car = car; }
@@ -219,6 +202,8 @@ class Traffic_lights {
   void setup() {
     car.setup();
     ped.setup();
+    timer.setup();
+    beep.setup();
   }
 
   void go() const {
@@ -228,9 +213,27 @@ class Traffic_lights {
 
   void hurry() const {
     car.hurry();
-    ped.hurry();
+    
+    // ped.hurry();
+    ped.stop(); // put the ped light to red
+    // blinking the light
+    for (size_t i = 0; i < sizeof(timer.getDIGITS()); i++) {
+      unsigned long now = millis();
+      if (now - timer.getBlink() >= 1000) {
+        timer.setBlink(now);
+        if (ped.getRed_state() == true)
+          ped.setRed_state(false);
+        else
+          ped.setRed_state(true);
+        digitalWrite(ped.getRed(), ped.getRed_state());
+        beep.beep(NOTE_C6, 100);
+        
+        // timer.count();
+        timer.display(timer.getDIGITS()[i]);
+      }
+    }
   }
-
+  
   void stop() const {
     car.stop();
     ped.stop();
@@ -242,50 +245,54 @@ class Traffic_lights {
 
 unsigned long start;
 
+Countdown Traffic_lights::timer(9, 12, 13); // Initialize static element
+// Initializing objects ==> Pin declaration
 Beeper beep_one(9);
 Beeper beep_two(8);
 
-Countdown Ped_lights::timer(9, 12, 13);
-Car_lights c_verti(49, 50, 51);
-Ped_lights p_verti(52, 53, beep_one);
-// bool red_state = false;
+Car_lights c_alpha(49, 50, 51);
+Ped_lights p_alpha(52, 53, beep_one);
+
+Car_lights c_beta(22, 23, 24);
+Ped_lights p_beta(25, 26, beep_two);
+
+// Aggregation to two direction
+Traffic_lights alpha(c_alpha, p_alpha);
+Traffic_lights beta(c_beta, p_beta);
 
 
 void setup() {
   start = millis();
-  // unsigned long Ped_lights::blink = millis();
-  // c_verti.setup();
-  // p_verti.setup();
+  alpha.setup();
+  beta.setup();
 }
  
 void loop() { 
   unsigned long now = millis();
 
-  if (now - start < 5000) {
+  if (now - start < 5000) { // 1-> Vert, 2-> Rouge
     // c_verti.go();
     // p_verti.go();
     //beta = stop
   }
   else
-    if (now - start < 8000) {
+    if (now - start < 8000) { // 1-> Jaune, 2-> Rouge
       // c_verti.hurry();
       // p_verti.hurry();
       //beta = stop
     }
     else
-      if (now - start < 13000) {
+      if (now - start < 13000) { // 1-> Rouge, 2-> Vert
         // c_verti.stop();
         // p_verti.stop();
         //beta = go
       }
       else
-        if ( now - start < 16000) {
+        if ( now - start < 16000) { // 1-> Rouge, 2-> Yellow
           // c_verti.freak_on();
           //beta = hurry
         }
-        else {
-          // restart the process
-          // c_verti.freak_off();
+        else { // Reset and Restart
           start = now;
         }
 }
