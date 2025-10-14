@@ -1,303 +1,181 @@
 #include <pitches.h>
 
-class Beeper { // The beeping module class
-  private:
-  static const int pin = 10;
-  int button;
+/* alpha     : 49 - 53
+   beta      : 22 - 26
+   7-segment : 11 - 13
+   buzzer    : 10
+   */
 
-  public:
-  Beeper(int button) : button(button) {}
-  
-  // getters & setters
-  int getPin() const { return pin; }
-
-  int getButton() const { return button; }
-
-  void setButton(int button) { this->button = button; }
-
-  // methods
-  void setup() const {
-    pinMode(pin, OUTPUT);
-    pinMode(button, INPUT);
-  }
-
-  void beep(int note, int freq) const {
-    tone(pin, note, freq);
-  }
-
-  void signal(int note, int freq) const {
-    tone(pin, note, freq);
-  }
-};
-
-class Countdown { // The 7 segment module fot the countdown
-  private: 
-  int dataPin, latchPin, clockPin;
-  
-  public:
-  //Constructor
-  Countdown(int dataPin, int latchPin, int clockPin) :
-            dataPin(dataPin), latchPin(latchPin), clockPin(clockPin) {}
-  
-  //getters
-  int getDataPin() const { return dataPin; }
-
-  int getLatchPin() const { return latchPin; }
-
-  int getClockPin() const { return clockPin; }
-  
-  //setters
-  void setDataPin(int dataPin) { this->dataPin = dataPin; }
-
-  void setLatchPin(int latchPin) { this->latchPin = latchPin; }
-
-  void setClockPin(int clockPin) { this->clockPin = clockPin; }
-
-  //methods
-  void setup() {
-    pinMode(dataPin, OUTPUT);
-    pinMode(latchPin, OUTPUT);
-    pinMode(clockPin, OUTPUT);
-  }
-
-  void display(int digit) {
-    digitalWrite(latchPin, false);
-    shiftOut(dataPin, clockPin, MSBFIRST, digit);
-    digitalWrite(latchPin, true);
-  }
-};
-
-class Car_lights {
-  private:
-  int green, yellow, red;
-  
-  public:
-  Car_lights(int green, int yellow, int red) : green(green), yellow(yellow), red(red) {
-  }
-
-  void setup() {
-    pinMode(green, OUTPUT);
-    pinMode(yellow, OUTPUT);
-    pinMode(red, OUTPUT);
-  }
-
-  //getters
-  int getGreen() const { return green;}
-
-  int getYellow() const { return yellow; }
-
-  int getRed() const { return red; }
-  
-  //setters
-  void setGreen(int green) { this->green = green; }
-
-  void setYellow(int yellow) { this->yellow = green; }
-
-  void setRed(int red) { this->red = red; }
-
-  //methods
-  void go() {
-    digitalWrite(green, true);
-    digitalWrite(yellow, false);
-    digitalWrite(red, false);
-  }
-
-  void hurry() {
-    digitalWrite(green, false);
-    digitalWrite(yellow, true);
-    digitalWrite(red, false);
-  }
-
-  void stop() {
-    digitalWrite(green, false);
-    digitalWrite(yellow, false);
-    digitalWrite(red, true);
-  }
-
-  void freak_on() {
-    digitalWrite(green, true);
-    digitalWrite(yellow, true);
-    digitalWrite(red, true);
-  }
-
-  void freak_off() {
-    digitalWrite(green, false);
-    digitalWrite(yellow, false);
-    digitalWrite(red, false);
-  }
-};
-
-class Ped_lights {
-  private:
-  int white, red;
-  Beeper beep;
-  bool red_state = false;
-
-  
-  public:
-  Ped_lights(int white, int red, Beeper beep) : white(white), red(red), beep(beep) {}
-  
-  //getters
-  int getWhite() const { return white; }
-
-  int getRed() const { return red; }
-
-  Beeper getBeep() const { return beep; }
-
-  bool getRed_state() const { return red_state; }
+int c_alpha_g = 22;
+int c_alpha_y = 23;
+int c_alpha_r = 24;
+int p_alpha_w = 25;
+int p_alpha_r = 26;
 
 
-  
-  //setters
-  void setWhite(int white) { this->white = white; }
-
-  void setRed(int red) { this->red = red; }
-
-  void setRed_state(bool state) { this->red_state = state; }
+int c_beta_g = 49;
+int c_beta_y = 50;
+int c_beta_r = 51;
+int p_beta_w = 52;
+int p_beta_r = 53;
 
 
-  //Methods
-  void setup() {
-    pinMode(white, OUTPUT);
-    pinMode(red, OUTPUT);
-    beep.setup();
-  }
+int buzzer = 10;
 
-  void go() const {
-    digitalWrite(white, true);
-    digitalWrite(red, false);
-  }
+int dataPin = 11;
+int latchPin = 12;
+int clockPin = 13;
 
+unsigned int start;
+unsigned int blink;
 
-  void stop() const {
-    digitalWrite(white, false);
-    digitalWrite(red, true);
-  }
-};
+const int digits[10] = {0B11111100, 0B01100000, 0B11011010, 0B11110010, 0B01100110, 0B10110110, 0B10111110, 0B11100000, 0B11111110, 0B11110110};
 
+bool state = false;
 
-class Traffic_lights { // Contains all element for a direction light system
-  private:
-  Car_lights car;
-  Ped_lights ped;
-  static Countdown timer;
-  unsigned long blink;
-  const int DIGITS[10] = {0B11111100, 0B01100000, 0B11011010, 0B11110010, 0B01100110, 0B10110110, 0B10111110, 0B11100000, 0B11111110, 0B11110110};
- 
-  public:
-  //Constructor
-  Traffic_lights(Car_lights car, Ped_lights ped) : car(car), ped(ped) {
-  }
-    
-  //getters
-  Car_lights getCar() const { return car; }
-
-  Ped_lights getPed() const { return ped; }
-
-  Countdown getTimer() const { return timer; }
-
-  unsigned long getBlink() const { return blink; }
-
-  //setters
-  void setcar(Car_lights car) { this->car = car; }
-
-  void setped(Ped_lights ped) { this->ped = ped; }
-
-  void setBlink(unsigned long blink) { this->blink = blink; }
-
-  //Methods
-  void setup() {
-    car.setup();
-    ped.setup();
-    timer.setup();
-    blink = millis();
-  }
-
-  void go() const {
-    car.go();
-    ped.go();
-  }
-
-  void hurry() {
-    // put the ped light to red
-    digitalWrite(ped.getWhite(), false);
-    bool state = true;
-    int i = 0;
-
-    // blinking the light
-    unsigned long now = millis();
-
-    if (now - blink >= 1000) {
-      blink = now;
-      if (state == true)
-        state = false;
-      else 
-        state = true;
-      
-      digitalWrite(ped.getRed(), state);
-      ped.getBeep().beep(NOTE_C6, 100);
-      
-      // timer.count();
-      timer.display(DIGITS[i++]);
-    }
-  }
-  
-  void stop() const {
-    car.stop();
-    ped.stop();
-  }
-};
-
-
-
-
-unsigned long start;
-// Initialize static element
-Countdown Traffic_lights::timer(9, 12, 13);
-Beeper beep(9);
-
-// Initializing objects ==> Pin declaration
-Car_lights c_alpha(49, 50, 51);
-Ped_lights p_alpha(52, 53, beep);
-
-Car_lights c_beta(22, 23, 24);
-Ped_lights p_beta(25, 26, beep);
-
-// Aggregation to two direction
-Traffic_lights alpha(c_alpha, p_alpha);
-Traffic_lights beta(c_beta, p_beta);
+int i = 9; // for tracking the digits index
 
 
 void setup() {
-  start = millis();
-  alpha.setup();
-  beta.setup();
-}
- 
-void loop() { 
-  unsigned long now = millis();
-  alpha.hurry();
+  pinMode(c_alpha_g, OUTPUT);
+  pinMode(c_alpha_y, OUTPUT);
+  pinMode(c_alpha_r, OUTPUT);
+  pinMode(p_alpha_w, OUTPUT);
+  pinMode(p_alpha_r, OUTPUT);
 
-  // if (now - start < 5000) { // 1-> Vert, 2-> Rouge
-  //   alpha.go();
-  //   beta.stop();
-  // }
-  // else
-  //   if (now - start < 8000) { // 1-> Jaune, 2-> Rouge
-  //     alpha.getCar().hurry();
-  //     // alpha.getPed().hurry();
-  //     // beta = stop
-  //   }
-  //   else
-  //     if (now - start < 13000) { // 1-> Rouge, 2-> Vert
-  //       alpha.stop();
-  //       beta.go();
-  //     }
-  //     else
-  //       if ( now - start < 16000) { // 1-> Rouge, 2-> Yellow
-  //         beta.getCar().hurry();
-  //         // beta.getPed().hurry();
-  //       } else { // Reset and Restart
-  //         start = now;
-  //       }
+  pinMode(c_beta_g, OUTPUT);
+  pinMode(c_beta_y, OUTPUT);
+  pinMode(c_beta_r, OUTPUT);
+  pinMode(p_beta_w, OUTPUT);
+  pinMode(p_beta_r, OUTPUT);
+
+  pinMode(buzzer, OUTPUT);
+
+  pinMode(dataPin, OUTPUT);
+  pinMode(latchPin, OUTPUT);
+  pinMode(clockPin, OUTPUT);
+
+  start = millis();
+  blink = millis();
+}
+
+void loop() {
+  unsigned long now = millis(); // timer initialization
+
+  // cycle start
+  if (now - start < 10000) { // alpha go
+    digitalWrite(c_alpha_g, true);
+    digitalWrite(c_alpha_y, false);
+    digitalWrite(c_alpha_r, false);
+    digitalWrite(p_alpha_w, true);
+    digitalWrite(p_alpha_r, false);
+
+    digitalWrite(c_beta_g, false);
+    digitalWrite(c_beta_y, false);
+    digitalWrite(c_beta_r, true);
+    digitalWrite(p_beta_w, false);
+    digitalWrite(p_beta_r, true);
+
+    digitalWrite(latchPin, false);
+    shiftOut(dataPin, clockPin, MSBFIRST, 0B00000000);
+    digitalWrite(latchPin, true);
+    //resetting the index
+    if (i < 0)
+      i = 9;
+  }
+  else
+    if (now - start < 20000) {
+      if (now - start < 15000) { // pedestrian countdown starts
+        if (now - blink > 1000) { // blinking speed
+          blink = now;
+          digitalWrite(p_alpha_w, false); // turn of pedestrian go light
+          if (state == true)
+            state = false;
+          else
+            state = true;
+          digitalWrite(p_alpha_r, state);
+          tone(buzzer, NOTE_C6, 100);
+          digitalWrite(latchPin, false);
+          shiftOut(dataPin, clockPin, MSBFIRST, digits[i--]);
+          digitalWrite(latchPin, true);
+        }
+      }
+      else { // alpha turns yellow
+        digitalWrite(c_alpha_g, false);
+        digitalWrite(c_alpha_y, true);
+        if (now - blink > 1000) { // pedestrian countdown continues
+          blink = now;
+          if (state == true)
+            state = false;
+          else
+            state = true;
+          digitalWrite(p_alpha_r, state);
+          tone(buzzer, NOTE_C6, 100);
+          digitalWrite(latchPin, false);
+          shiftOut(dataPin, clockPin, MSBFIRST, digits[i--]);
+          digitalWrite(latchPin, true);
+        }
+      }
+    }
+    /***********************************************************END OF FIRST CYCLE***********************************************************************/
+    else
+      if (now - start < 30000) { // alpha stop & beta go
+        digitalWrite(c_alpha_g, false);
+        digitalWrite(c_alpha_y, false);
+        digitalWrite(c_alpha_r, true);
+        digitalWrite(p_alpha_w, false);
+        digitalWrite(p_alpha_r, true);
+
+        digitalWrite(c_beta_g, true);
+        digitalWrite(c_beta_y, false);
+        digitalWrite(c_beta_r, false);
+        digitalWrite(p_beta_w, true);
+        digitalWrite(p_beta_r, false);
+
+        digitalWrite(latchPin, false);
+        shiftOut(dataPin, clockPin, MSBFIRST, 0B00000000);
+        digitalWrite(latchPin, true);
+        //resetting the index
+        if (i < 0)
+          i = 9;
+      }
+      else
+        if (now - start < 40000) {
+          if (now - start < 35000) { // pedestrian countdown starts
+            if (now - blink > 1000) { // blinking speed
+              blink = now;
+              digitalWrite(p_beta_w, false); // turn of pedestrian go light
+              if (state == true)
+                state = false;
+              else
+                state = true;
+              digitalWrite(p_beta_r, state);
+              tone(buzzer, NOTE_C6, 100);
+              digitalWrite(latchPin, false);
+              shiftOut(dataPin, clockPin, MSBFIRST, digits[i--]);
+              digitalWrite(latchPin, true);
+            }
+          }
+          else { // beta turns yellow
+            digitalWrite(c_beta_g, false);
+            digitalWrite(c_beta_y, true);
+            if (now - blink > 1000) { // pedestrian countdown continues
+              blink = now;
+              if (state == true)
+                state = false;
+              else
+                state = true;
+              digitalWrite(p_beta_r, state);
+              tone(buzzer, NOTE_C6, 100);
+              digitalWrite(latchPin, false);
+              shiftOut(dataPin, clockPin, MSBFIRST, digits[i--]);
+              digitalWrite(latchPin, true);
+            }
+          }
+        }
+        /***********************************************************END OF SECOND CYCLE***********************************************************************/
+        else { // start over
+          start = now;
+        }
+
 }
