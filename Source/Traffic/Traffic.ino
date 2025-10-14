@@ -105,7 +105,6 @@ void loop() {
         digitalWrite(c_alpha_y, true);
         if (now - blink > 1000) { // pedestrian countdown continues
           blink = now;
-          // digitalWrite(p_alpha_w, false); // turn of pedestrian go light
           if (state == true)
             state = false;
           else
@@ -162,7 +161,6 @@ void loop() {
             digitalWrite(c_beta_y, true);
             if (now - blink > 1000) { // pedestrian countdown continues
               blink = now;
-              // digitalWrite(p_beta_w, false); // turn of pedestrian go light
               if (state == true)
                 state = false;
               else
