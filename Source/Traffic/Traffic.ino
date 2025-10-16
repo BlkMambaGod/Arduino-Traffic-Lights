@@ -60,10 +60,10 @@ void setup() {
 }
 
 void loop() {
-  unsigned long now = millis(); // timer initialization
+  // unsigned long millis() = millis(); // timer initialization
 
   // cycle start
-  if (now - start < 10000) { // alpha go
+  if ((millis() - start) % 40000 < 10000) { // alpha go
     digitalWrite(c_alpha_g, true);
     digitalWrite(c_alpha_y, false);
     digitalWrite(c_alpha_r, false);
@@ -79,15 +79,13 @@ void loop() {
     digitalWrite(latchPin, false);
     shiftOut(dataPin, clockPin, MSBFIRST, 0B00000000);
     digitalWrite(latchPin, true);
-    //resetting the index
-    if (i < 0)
-      i = 9;
+    i = 9; //resetting the index
   }
   else
-    if (now - start < 20000) {
-      if (now - start < 15000) { // pedestrian countdown starts
-        if (now - blink > 1000) { // blinking speed
-          blink = now;
+    if ((millis() - start) % 40000 < 20000) {
+      if ((millis() - start) % 40000 < 15000) { // pedestrian countdown starts
+        if (millis() - blink > 1000) { // blinking speed
+          blink = millis();
           digitalWrite(p_alpha_w, false); // turn of pedestrian go light
           if (state == true)
             state = false;
@@ -103,8 +101,8 @@ void loop() {
       else { // alpha turns yellow
         digitalWrite(c_alpha_g, false);
         digitalWrite(c_alpha_y, true);
-        if (now - blink > 1000) { // pedestrian countdown continues
-          blink = now;
+        if (millis() - blink > 1000) { // pedestrian countdown continues
+          blink = millis();
           if (state == true)
             state = false;
           else
@@ -119,7 +117,7 @@ void loop() {
     }
     /***********************************************************END OF FIRST CYCLE***********************************************************************/
     else
-      if (now - start < 30000) { // alpha stop & beta go
+      if ((millis() - start) % 40000 < 30000) { // alpha stop & beta go
         digitalWrite(c_alpha_g, false);
         digitalWrite(c_alpha_y, false);
         digitalWrite(c_alpha_r, true);
@@ -135,15 +133,13 @@ void loop() {
         digitalWrite(latchPin, false);
         shiftOut(dataPin, clockPin, MSBFIRST, 0B00000000);
         digitalWrite(latchPin, true);
-        //resetting the index
-        if (i < 0)
-          i = 9;
+        i = 9; //resetting the index
       }
       else
-        if (now - start < 40000) {
-          if (now - start < 35000) { // pedestrian countdown starts
-            if (now - blink > 1000) { // blinking speed
-              blink = now;
+        if ((millis() - start) % 40000 < 40000) {
+          if (millis() - start < 35000) { // pedestrian countdown starts
+            if (millis() - blink > 1000) { // blinking speed
+              blink = millis();
               digitalWrite(p_beta_w, false); // turn of pedestrian go light
               if (state == true)
                 state = false;
@@ -159,8 +155,8 @@ void loop() {
           else { // beta turns yellow
             digitalWrite(c_beta_g, false);
             digitalWrite(c_beta_y, true);
-            if (now - blink > 1000) { // pedestrian countdown continues
-              blink = now;
+            if (millis() - blink > 1000) { // pedestrian countdown continues
+              blink = millis();
               if (state == true)
                 state = false;
               else
@@ -174,8 +170,4 @@ void loop() {
           }
         }
         /***********************************************************END OF SECOND CYCLE***********************************************************************/
-        else { // start over
-          start = now;
-        }
-
 }
