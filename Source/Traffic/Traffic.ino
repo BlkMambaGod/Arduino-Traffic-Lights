@@ -64,6 +64,7 @@ void loop() {
 
   // cycle start
   if ((millis() - start) % 40000 < 10000) { // alpha go
+    i = 9; //resetting the index
     digitalWrite(c_alpha_g, true);
     digitalWrite(c_alpha_y, false);
     digitalWrite(c_alpha_r, false);
@@ -79,45 +80,23 @@ void loop() {
     digitalWrite(latchPin, false);
     shiftOut(dataPin, clockPin, MSBFIRST, 0B00000000);
     digitalWrite(latchPin, true);
-    i = 9; //resetting the index
   }
   else
     if ((millis() - start) % 40000 < 20000) {
       if ((millis() - start) % 40000 < 15000) { // pedestrian countdown starts
-        if (millis() - blink > 1000) { // blinking speed
-          blink = millis();
-          digitalWrite(p_alpha_w, false); // turn of pedestrian go light
-          if (state == true)
-            state = false;
-          else
-            state = true;
-          digitalWrite(p_alpha_r, state);
-          tone(buzzer, NOTE_C6, 100);
-          digitalWrite(latchPin, false);
-          shiftOut(dataPin, clockPin, MSBFIRST, digits[i--]);
-          digitalWrite(latchPin, true);
-        }
+        digitalWrite(p_alpha_w, false); // turn of pedestrian go light
+        blinking(p_alpha_r);
       }
       else { // alpha turns yellow
         digitalWrite(c_alpha_g, false);
         digitalWrite(c_alpha_y, true);
-        if (millis() - blink > 1000) { // pedestrian countdown continues
-          blink = millis();
-          if (state == true)
-            state = false;
-          else
-            state = true;
-          digitalWrite(p_alpha_r, state);
-          tone(buzzer, NOTE_C6, 100);
-          digitalWrite(latchPin, false);
-          shiftOut(dataPin, clockPin, MSBFIRST, digits[i--]);
-          digitalWrite(latchPin, true);
-        }
+        blinking(p_alpha_r);
       }
     }
     /***********************************************************END OF FIRST CYCLE***********************************************************************/
     else
       if ((millis() - start) % 40000 < 30000) { // alpha stop & beta go
+        i = 9; //resetting the index
         digitalWrite(c_alpha_g, false);
         digitalWrite(c_alpha_y, false);
         digitalWrite(c_alpha_r, true);
@@ -133,41 +112,35 @@ void loop() {
         digitalWrite(latchPin, false);
         shiftOut(dataPin, clockPin, MSBFIRST, 0B00000000);
         digitalWrite(latchPin, true);
-        i = 9; //resetting the index
       }
       else
         if ((millis() - start) % 40000 < 40000) {
           if (millis() - start < 35000) { // pedestrian countdown starts
-            if (millis() - blink > 1000) { // blinking speed
-              blink = millis();
-              digitalWrite(p_beta_w, false); // turn of pedestrian go light
-              if (state == true)
-                state = false;
-              else
-                state = true;
-              digitalWrite(p_beta_r, state);
-              tone(buzzer, NOTE_C6, 100);
-              digitalWrite(latchPin, false);
-              shiftOut(dataPin, clockPin, MSBFIRST, digits[i--]);
-              digitalWrite(latchPin, true);
-            }
+            digitalWrite(p_beta_w, false); // turn of pedestrian go light
+            blinking(p_beta_r);
           }
           else { // beta turns yellow
             digitalWrite(c_beta_g, false);
             digitalWrite(c_beta_y, true);
-            if (millis() - blink > 1000) { // pedestrian countdown continues
-              blink = millis();
-              if (state == true)
-                state = false;
-              else
-                state = true;
-              digitalWrite(p_beta_r, state);
-              tone(buzzer, NOTE_C6, 100);
-              digitalWrite(latchPin, false);
-              shiftOut(dataPin, clockPin, MSBFIRST, digits[i--]);
-              digitalWrite(latchPin, true);
-            }
+            blinking(p_beta_r);
           }
         }
         /***********************************************************END OF SECOND CYCLE***********************************************************************/
+}
+
+/*******************************************************************METHODS************************************************************************************/
+
+void blinking(int red_light) {
+  if (millis() - blink > 1000) { // blinking speed
+    blink = millis();
+    if (state == true)
+      state = false;
+    else
+      state = true;
+    digitalWrite(red_light, state);
+    tone(buzzer, NOTE_C6, 100);
+    digitalWrite(latchPin, false);
+    shiftOut(dataPin, clockPin, MSBFIRST, digits[i--]);
+    digitalWrite(latchPin, true);
+  }
 }
