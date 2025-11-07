@@ -26,8 +26,7 @@ int dataPin = 11;
 int latchPin = 12;
 int clockPin = 13;
 
-unsigned int start;
-unsigned int blink;
+unsigned long blink;
 
 const int digits[10] = {0B11111100, 0B01100000, 0B11011010, 0B11110010, 0B01100110, 0B10110110, 0B10111110, 0B11100000, 0B11111110, 0B11110110};
 
@@ -55,15 +54,14 @@ void setup() {
   pinMode(latchPin, OUTPUT);
   pinMode(clockPin, OUTPUT);
 
-  start = millis();
   blink = millis();
 }
 
 void loop() {
-  // unsigned long millis() = millis(); // timer initialization
+  // unsigned long now = millis(); // timer initialization
 
   // cycle start
-  if ((millis() - start) % 40000 < 10000) { // alpha go
+  if (millis() % 40000 < 10000) { // alpha go
     i = 9; //resetting the index
     digitalWrite(c_alpha_g, true);
     digitalWrite(c_alpha_y, false);
@@ -82,8 +80,8 @@ void loop() {
     digitalWrite(latchPin, true);
   }
   else
-    if ((millis() - start) % 40000 < 20000) {
-      if ((millis() - start) % 40000 < 15000) { // pedestrian countdown starts
+    if (millis() % 40000 < 20000) {
+      if (millis() % 40000 < 15000) { // pedestrian countdown starts
         digitalWrite(p_alpha_w, false); // turn of pedestrian go light
         blinking(p_alpha_r);
       }
@@ -95,7 +93,7 @@ void loop() {
     }
     /***********************************************************END OF FIRST CYCLE***********************************************************************/
     else
-      if ((millis() - start) % 40000 < 30000) { // alpha stop & beta go
+      if (millis() % 40000 < 30000) { // alpha stop & beta go
         i = 9; //resetting the index
         digitalWrite(c_alpha_g, false);
         digitalWrite(c_alpha_y, false);
@@ -114,8 +112,8 @@ void loop() {
         digitalWrite(latchPin, true);
       }
       else
-        if ((millis() - start) % 40000 < 40000) {
-          if (millis() - start < 35000) { // pedestrian countdown starts
+        if (millis() % 40000 < 40000) {
+          if (millis() % 40000 < 35000) { // pedestrian countdown starts
             digitalWrite(p_beta_w, false); // turn of pedestrian go light
             blinking(p_beta_r);
           }
