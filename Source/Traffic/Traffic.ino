@@ -61,18 +61,16 @@ void setup() {
   pinMode(latchPin, OUTPUT);
   pinMode(clockPin, OUTPUT);
 
-  cycle_over = true;
-
   blink = millis();
 }
 
 void loop() {
   lux = analogRead(photores);
-  if(cycle_over && lux > treshold)
-    day_cycle();
-  else
-    if(cycle_over && lux < treshold)
+  if(cycle_over && lux < treshold)
       night_cycle();
+  else 
+    day_cycle();
+    
 }
 
 /*******************************************************************METHODS************************************************************************************/
@@ -156,9 +154,10 @@ void day_cycle() {
             digitalWrite(c_beta_y, true);
             blinking(p_beta_r);
           }
+          if (i == -1)
+            cycle_over = true;
         }
         /***********************************************************END OF CYCLE***********************************************************************/
-        cycle_over = true;
 }
 
 void night_cycle() {
