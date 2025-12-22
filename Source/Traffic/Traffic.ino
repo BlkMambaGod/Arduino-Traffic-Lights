@@ -36,6 +36,7 @@ int lux;
 const int treshold = 50;
 
 // Control variables
+unsigned long start;
 unsigned long blink;
 bool state = false;
 int i = 9; // for tracking the digits index
@@ -61,6 +62,7 @@ void setup() {
   pinMode(latchPin, OUTPUT);
   pinMode(clockPin, OUTPUT);
 
+  start = millis();
   blink = millis();
 }
 
@@ -93,7 +95,7 @@ void blinking(int red_light) {
 void day_cycle() {
   // cycle start
   cycle_over = false;
-  if (millis() % 40000 < 10000) { // alpha go
+  if (millis() - start < 10000) { // alpha go
     i = 9; //resetting the index
     digitalWrite(c_alpha_g, true);
     digitalWrite(c_alpha_y, false);
@@ -112,8 +114,8 @@ void day_cycle() {
     digitalWrite(latchPin, true);
   }
   else
-    if (millis() % 40000 < 20000) {
-      if (millis() % 40000 < 15000) { // pedestrian countdown starts
+    if (millis() - start < 20000) {
+      if (millis() - start < 15000) { // pedestrian countdown starts
         digitalWrite(p_alpha_w, false); // turn of pedestrian go light
         blinking(p_alpha_r);
       }
@@ -125,7 +127,7 @@ void day_cycle() {
     }
     /***********************************************************END OF FIRST HALF***********************************************************************/
     else
-      if (millis() % 40000 < 30000) { // alpha stop & beta go
+      if (millis() - start < 30000) { // alpha stop & beta go
         i = 9; //resetting the index
         digitalWrite(c_alpha_g, false);
         digitalWrite(c_alpha_y, false);
@@ -144,8 +146,8 @@ void day_cycle() {
         digitalWrite(latchPin, true);
       }
       else
-        if (millis() % 40000 < 40000) {
-          if (millis() % 40000 < 35000) { // pedestrian countdown starts
+        if (millis() - start < 40000) {
+          if (millis() - start < 35000) { // pedestrian countdown starts
             digitalWrite(p_beta_w, false); // turn of pedestrian go light
             blinking(p_beta_r);
           }
@@ -154,24 +156,33 @@ void day_cycle() {
             digitalWrite(c_beta_y, true);
             blinking(p_beta_r);
           }
+        }
+        /***********************************************************END OF CYCLE***********************************************************************/
+        else {
+          start = millis();
           if (i == -1)
             cycle_over = true;
         }
-        /***********************************************************END OF CYCLE***********************************************************************/
 }
+
 
 void night_cycle() {
   cycle_over = false;
-  digitalWrite(c_alpha_g, false);
+  digitalWrite(c_alpha_g, true);
   digitalWrite(c_alpha_y, false);
   digitalWrite(c_alpha_r, false);
-  digitalWrite(p_alpha_w, false);
+  digitalWrite(p_alpha_w, true);
   digitalWrite(p_alpha_r, false);
 
   digitalWrite(c_beta_g, false);
   digitalWrite(c_beta_y, false);
-  digitalWrite(c_beta_r, false);
+  digitalWrite(c_beta_r, true);
   digitalWrite(p_beta_w, false);
-  digitalWrite(p_beta_r, false);
+  digitalWrite(p_beta_r, true);
+
+  digitalWrite(latchPin, false);
+  shiftOut(dataPin, clockPin, MSBFIRST, 0B00000000);
+  digitalWrite(latchPin, true);
+  start = millis();
   cycle_over = true;
 }
