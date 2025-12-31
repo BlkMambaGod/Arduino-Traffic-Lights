@@ -1,5 +1,7 @@
 #include <pitches.h>
 
+#define DEBUG
+
 /* alpha     : 49 - 53
    beta      : 22 - 26
    7-segment : 11 - 13
@@ -33,9 +35,16 @@ const int digits[10] = {0B11111100, 0B01100000, 0B11011010, 0B11110010, 0B011001
 // Light variables
 int photores = A15;
 int lux;
-const int treshold = 50;
+const int treshold = 300;
+
+// Push buttons
+int a_button = 8;
+int b_button = 9;
+bool a_state;
+bool b_state;
 
 // Control variables
+unsigned long start;
 unsigned long blink;
 bool state = false;
 int i = 9; // for tracking the digits index
@@ -43,6 +52,10 @@ bool cycle_over;
 
 
 void setup() {
+  #ifdef DEBUG
+  Serial.begin(9600);
+  #endif // DEBUG
+
   pinMode(c_alpha_g, OUTPUT);
   pinMode(c_alpha_y, OUTPUT);
   pinMode(c_alpha_r, OUTPUT);
@@ -61,11 +74,21 @@ void setup() {
   pinMode(latchPin, OUTPUT);
   pinMode(clockPin, OUTPUT);
 
+  pinMode(b_button, INPUT);
+  pinMode(a_button, INPUT);
+
+  start = millis();
   blink = millis();
 }
 
 void loop() {
   lux = analogRead(photores);
+
+  #ifdef DEBUG
+  Serial.print("Lux = ");
+  Serial.println(lux);
+  #endif // DEBUG
+
   if(cycle_over && lux < treshold)
       night_cycle();
   else 
@@ -93,7 +116,7 @@ void blinking(int red_light) {
 void day_cycle() {
   // cycle start
   cycle_over = false;
-  if (millis() % 40000 < 10000) { // alpha go
+  if (millis() - start < 10000) { // alpha go
     i = 9; //resetting the index
     digitalWrite(c_alpha_g, true);
     digitalWrite(c_alpha_y, false);
@@ -112,8 +135,8 @@ void day_cycle() {
     digitalWrite(latchPin, true);
   }
   else
-    if (millis() % 40000 < 20000) {
-      if (millis() % 40000 < 15000) { // pedestrian countdown starts
+    if (millis() - start < 20000) {
+      if (millis() - start < 15000) { // pedestrian countdown starts
         digitalWrite(p_alpha_w, false); // turn of pedestrian go light
         blinking(p_alpha_r);
       }
@@ -125,7 +148,7 @@ void day_cycle() {
     }
     /***********************************************************END OF FIRST HALF***********************************************************************/
     else
-      if (millis() % 40000 < 30000) { // alpha stop & beta go
+      if (millis() - start < 30000) { // alpha stop & beta go
         i = 9; //resetting the index
         digitalWrite(c_alpha_g, false);
         digitalWrite(c_alpha_y, false);
@@ -144,8 +167,8 @@ void day_cycle() {
         digitalWrite(latchPin, true);
       }
       else
-        if (millis() % 40000 < 40000) {
-          if (millis() % 40000 < 35000) { // pedestrian countdown starts
+        if (millis() - start < 40000) {
+          if (millis() - start < 35000) { // pedestrian countdown starts
             digitalWrite(p_beta_w, false); // turn of pedestrian go light
             blinking(p_beta_r);
           }
@@ -154,24 +177,92 @@ void day_cycle() {
             digitalWrite(c_beta_y, true);
             blinking(p_beta_r);
           }
+        }
+        /***********************************************************END OF CYCLE***********************************************************************/
+        else {
+          start = millis();
           if (i == -1)
             cycle_over = true;
         }
-        /***********************************************************END OF CYCLE***********************************************************************/
 }
 
 void night_cycle() {
   cycle_over = false;
-  digitalWrite(c_alpha_g, false);
-  digitalWrite(c_alpha_y, false);
-  digitalWrite(c_alpha_r, false);
-  digitalWrite(p_alpha_w, false);
-  digitalWrite(p_alpha_r, false);
+  b_state = digitalRead(b_button);
 
-  digitalWrite(c_beta_g, false);
-  digitalWrite(c_beta_y, false);
-  digitalWrite(c_beta_r, false);
-  digitalWrite(p_beta_w, false);
-  digitalWrite(p_beta_r, false);
-  cycle_over = true;
+  #ifdef DEBUG
+  Serial.print("b_Button = ");
+  Serial.println(b_state);
+  #endif // DEBUG
+
+  if (!b_state) { // if the beta crossing is not press, we stay in alpha green all the time.
+    i = 9;
+    digitalWrite(c_alpha_g, true);
+    digitalWrite(c_alpha_y, false);
+    digitalWrite(c_alpha_r, false);
+    digitalWrite(p_alpha_w, true);
+    digitalWrite(p_alpha_r, false);
+
+    digitalWrite(c_beta_g, false);
+    digitalWrite(c_beta_y, false);
+    digitalWrite(c_beta_r, true);
+    digitalWrite(p_beta_w, false);
+    digitalWrite(p_beta_r, true);
+    start = millis(); // update start for next part
+  }
+  else {
+    if (millis() - start < 10000) {
+      if (millis() - start < 5000) { // pedestrian countdown starts
+        digitalWrite(p_alpha_w, false); // turn of pedestrian go light
+        blinking(p_alpha_r);
+      }
+      else { // alpha turns yellow
+        digitalWrite(c_alpha_g, false);
+        digitalWrite(c_alpha_y, true);
+        blinking(p_alpha_r);
+      }
+    }
+    else
+      if (millis() - start < 20000) {
+        i = 9; //resetting the index
+        digitalWrite(c_alpha_g, false);
+        digitalWrite(c_alpha_y, false);
+        digitalWrite(c_alpha_r, true);
+        digitalWrite(p_alpha_w, false);
+        digitalWrite(p_alpha_r, true);
+
+        digitalWrite(c_beta_g, true);
+        digitalWrite(c_beta_y, false);
+        digitalWrite(c_beta_r, false);
+        digitalWrite(p_beta_w, true);
+        digitalWrite(p_beta_r, false);
+
+        digitalWrite(latchPin, false);
+        shiftOut(dataPin, clockPin, MSBFIRST, 0B00000000);
+        digitalWrite(latchPin, true);
+      }
+      else
+        if (millis() - start < 30000) {
+          if (millis() - start < 25000) { // pedestrian countdown starts
+            digitalWrite(p_beta_w, false); // turn of pedestrian go light
+            blinking(p_beta_r);
+          }
+          else { // beta turns yellow
+            digitalWrite(c_beta_g, false);
+            digitalWrite(c_beta_y, true);
+            blinking(p_beta_r);
+          }
+        }
+        else {
+          start = millis();
+          if (i == -1)
+            cycle_over = true;
+        }
+  }
+
+//   digitalWrite(latchPin, false);
+//   shiftOut(dataPin, clockPin, MSBFIRST, 0B00000000);
+//   digitalWrite(latchPin, true);
+//   start = millis();
+//   cycle_over = true;
 }
