@@ -35,7 +35,7 @@ const int digits[10] = {0B11111100, 0B01100000, 0B11011010, 0B11110010, 0B011001
 // Light variables
 int photores = A15;
 int lux;
-const int treshold = 50;
+const int treshold = 300;
 
 // Push buttons
 int a_button = 8;
@@ -189,7 +189,7 @@ void day_cycle() {
 void night_cycle() {
   cycle_over = false;
   b_state = digitalRead(b_button);
-  
+
   #ifdef DEBUG
   Serial.print("b_Button = ");
   Serial.println(b_state);
