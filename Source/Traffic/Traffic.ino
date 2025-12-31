@@ -1,5 +1,7 @@
 #include <pitches.h>
 
+#define DEBUG
+
 /* alpha     : 49 - 53
    beta      : 22 - 26
    7-segment : 11 - 13
@@ -50,6 +52,10 @@ bool cycle_over;
 
 
 void setup() {
+  #ifdef DEBUG
+  Serial.begin(9600);
+  #endif // DEBUG
+
   pinMode(c_alpha_g, OUTPUT);
   pinMode(c_alpha_y, OUTPUT);
   pinMode(c_alpha_r, OUTPUT);
@@ -77,6 +83,12 @@ void setup() {
 
 void loop() {
   lux = analogRead(photores);
+
+  #ifdef DEBUG
+  Serial.print("Lux = ");
+  Serial.println(lux);
+  #endif // DEBUG
+
   if(cycle_over && lux < treshold)
       night_cycle();
   else 
@@ -177,6 +189,12 @@ void day_cycle() {
 void night_cycle() {
   cycle_over = false;
   b_state = digitalRead(b_button);
+  
+  #ifdef DEBUG
+  Serial.print("b_Button = ");
+  Serial.println(b_state);
+  #endif // DEBUG
+
   if (!b_state) { // if the beta crossing is not press, we stay in alpha green all the time.
     i = 9;
     digitalWrite(c_alpha_g, true);
