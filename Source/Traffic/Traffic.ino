@@ -35,6 +35,12 @@ int photores = A15;
 int lux;
 const int treshold = 50;
 
+// Push buttons
+int a_button = 8;
+int b_button = 9;
+bool a_state;
+bool b_state;
+
 // Control variables
 unsigned long start;
 unsigned long blink;
@@ -61,6 +67,9 @@ void setup() {
   pinMode(dataPin, OUTPUT);
   pinMode(latchPin, OUTPUT);
   pinMode(clockPin, OUTPUT);
+
+  pinMode(b_button, INPUT);
+  pinMode(a_button, INPUT);
 
   start = millis();
   blink = millis();
@@ -165,24 +174,77 @@ void day_cycle() {
         }
 }
 
-
 void night_cycle() {
   cycle_over = false;
-  digitalWrite(c_alpha_g, true);
-  digitalWrite(c_alpha_y, false);
-  digitalWrite(c_alpha_r, false);
-  digitalWrite(p_alpha_w, true);
-  digitalWrite(p_alpha_r, false);
+  b_state = digitalRead(b_button);
+  if (!b_state) { // if the beta crossing is not press, we stay in alpha green all the time.
+    i = 9;
+    digitalWrite(c_alpha_g, true);
+    digitalWrite(c_alpha_y, false);
+    digitalWrite(c_alpha_r, false);
+    digitalWrite(p_alpha_w, true);
+    digitalWrite(p_alpha_r, false);
 
-  digitalWrite(c_beta_g, false);
-  digitalWrite(c_beta_y, false);
-  digitalWrite(c_beta_r, true);
-  digitalWrite(p_beta_w, false);
-  digitalWrite(p_beta_r, true);
+    digitalWrite(c_beta_g, false);
+    digitalWrite(c_beta_y, false);
+    digitalWrite(c_beta_r, true);
+    digitalWrite(p_beta_w, false);
+    digitalWrite(p_beta_r, true);
+    start = millis(); // update start for next part
+  }
+  else {
+    if (millis() - start < 10000) {
+      if (millis() - start < 5000) { // pedestrian countdown starts
+        digitalWrite(p_alpha_w, false); // turn of pedestrian go light
+        blinking(p_alpha_r);
+      }
+      else { // alpha turns yellow
+        digitalWrite(c_alpha_g, false);
+        digitalWrite(c_alpha_y, true);
+        blinking(p_alpha_r);
+      }
+    }
+    else
+      if (millis() - start < 20000) {
+        i = 9; //resetting the index
+        digitalWrite(c_alpha_g, false);
+        digitalWrite(c_alpha_y, false);
+        digitalWrite(c_alpha_r, true);
+        digitalWrite(p_alpha_w, false);
+        digitalWrite(p_alpha_r, true);
 
-  digitalWrite(latchPin, false);
-  shiftOut(dataPin, clockPin, MSBFIRST, 0B00000000);
-  digitalWrite(latchPin, true);
-  start = millis();
-  cycle_over = true;
+        digitalWrite(c_beta_g, true);
+        digitalWrite(c_beta_y, false);
+        digitalWrite(c_beta_r, false);
+        digitalWrite(p_beta_w, true);
+        digitalWrite(p_beta_r, false);
+
+        digitalWrite(latchPin, false);
+        shiftOut(dataPin, clockPin, MSBFIRST, 0B00000000);
+        digitalWrite(latchPin, true);
+      }
+      else
+        if (millis() - start < 30000) {
+          if (millis() - start < 25000) { // pedestrian countdown starts
+            digitalWrite(p_beta_w, false); // turn of pedestrian go light
+            blinking(p_beta_r);
+          }
+          else { // beta turns yellow
+            digitalWrite(c_beta_g, false);
+            digitalWrite(c_beta_y, true);
+            blinking(p_beta_r);
+          }
+        }
+        else {
+          start = millis();
+          if (i == -1)
+            cycle_over = true;
+        }
+  }
+
+//   digitalWrite(latchPin, false);
+//   shiftOut(dataPin, clockPin, MSBFIRST, 0B00000000);
+//   digitalWrite(latchPin, true);
+//   start = millis();
+//   cycle_over = true;
 }
